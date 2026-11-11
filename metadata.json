@@ -1,0 +1,6 @@
+{
+  "name": "OptiPD - Mesure Précise de l'Écart Pupillaire",
+  "description": "Application d'optométrie avancée pour mesurer l'écart pupillaire (PD) en vision de loin et de près par calibrage carte ISO/IEC 7810 et vision par IA.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
