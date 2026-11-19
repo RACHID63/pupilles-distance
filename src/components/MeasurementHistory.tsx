@@ -1,6 +1,7 @@
-import React from 'react';
-import { SavedMeasurement } from '../types/optometry';
-import { X, Trash2, Calendar, Eye, Download, Check, FileText } from 'lucide-react';
+import React, { useState } from 'react';
+import { SavedMeasurement, DEFAULT_SHOOTING_DISTANCE_CM } from '../types/optometry';
+import { exportResultsToPdf } from '../utils/pdfExport';
+import { X, Trash2, Calendar, Eye, FileDown, Loader2 } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -19,7 +20,36 @@ export const MeasurementHistory: React.FC<Props> = ({
   onClearAll,
   onSelect,
 }) => {
+  const [exportingId, setExportingId] = useState<string | null>(null);
+
   if (!isOpen) return null;
+
+  const handleQuickPdfExport = async (item: SavedMeasurement) => {
+    if (exportingId) return;
+    setExportingId(item.id);
+    try {
+      const calc = {
+        ...item.calculations,
+        shootingDistanceCm: item.calculations.shootingDistanceCm ?? DEFAULT_SHOOTING_DISTANCE_CM,
+        measuredPdAtShootingDistance:
+          item.calculations.measuredPdAtShootingDistance ?? item.calculations.totalPdDistance,
+        intermediateVisionPd:
+          item.calculations.intermediateVisionPd ??
+          Number((item.calculations.totalPdDistance * (650 / 675)).toFixed(2)),
+        convergenceCorrectionMm: item.calculations.convergenceCorrectionMm ?? 0,
+      };
+      await exportResultsToPdf({
+        imageUrl: item.imageUrl,
+        calculations: calc,
+        points: item.points,
+        patientName: item.name,
+      });
+    } catch (e) {
+      console.error('Quick PDF export error:', e);
+    } finally {
+      setExportingId(null);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
@@ -101,14 +131,27 @@ export const MeasurementHistory: React.FC<Props> = ({
                 </div>
 
                 {/* Main PD Badge & Actions */}
-                <div className="flex items-center gap-3">
-                  <div className="text-right">
+                <div className="flex items-center gap-2">
+                  <div className="text-right mr-1">
                     <span className="text-xs text-slate-500 block">Écart Total</span>
                     <span className="text-xl font-black font-mono text-white">
                       {item.calculations.totalPdDistance}
                       <span className="text-xs text-rose-400 ml-1">mm</span>
                     </span>
                   </div>
+
+                  <button
+                    onClick={() => handleQuickPdfExport(item)}
+                    disabled={exportingId === item.id}
+                    title="Exporter en PDF"
+                    className="p-2 rounded-xl bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-500/30 text-cyan-300 hover:text-white transition disabled:opacity-50"
+                  >
+                    {exportingId === item.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <FileDown className="w-4 h-4" />
+                    )}
+                  </button>
 
                   <button
                     onClick={() => {
