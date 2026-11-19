@@ -503,19 +503,20 @@ export const AdjustmentCanvas: React.FC<Props> = ({
       </div>
 
       {/* Main Interactive Stage */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
         {/* Photo Container & SVG Overlay (8 cols) */}
         <div className="lg:col-span-8 flex flex-col gap-3">
           {/* Outer Frame with exact centered image matching */}
           <div className="relative w-full flex items-center justify-center bg-slate-950 rounded-2xl border border-slate-700/80 shadow-2xl p-1.5 overflow-hidden">
-            {/* The Image Wrapper has EXACT ASPECT RATIO of natural image to eliminate letterbox shift */}
+            {/* The Image Wrapper preserves EXACT natural aspect ratio in both portrait & landscape */}
             <div
               ref={containerRef}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
               style={{
                 aspectRatio: `${imgNaturalSize.width} / ${imgNaturalSize.height}`,
-                maxHeight: '66vh',
+                maxWidth: `calc(66dvh * ${imgNaturalSize.width / Math.max(1, imgNaturalSize.height)})`,
+                maxHeight: '66dvh',
               }}
               className="relative w-full select-none touch-none rounded-xl overflow-hidden shadow-lg bg-black"
             >
@@ -738,7 +739,7 @@ export const AdjustmentCanvas: React.FC<Props> = ({
                   </div>
 
                   {/* Canvas Viewport (100% matched to active target center) */}
-                  <div className="w-40 h-40 rounded-xl overflow-hidden border border-slate-700 bg-black relative shadow-inner">
+                  <div className="w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-xl overflow-hidden border border-slate-700 bg-black relative shadow-inner">
                     <canvas ref={magnifierCanvasRef} className="w-full h-full object-cover" />
                   </div>
 

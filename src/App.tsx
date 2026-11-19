@@ -246,7 +246,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-rose-500/30 selection:text-rose-200">
+    <div className="min-h-[100dvh] bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-rose-500/30 selection:text-rose-200 overflow-x-hidden">
       {/* Top Header */}
       <Header
         voiceEnabled={voiceGuidanceEnabled}
@@ -260,7 +260,7 @@ export default function App() {
       />
 
       {/* Main Container */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-6 flex flex-col items-center">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 flex flex-col items-center">
         {/* STEP 1: CAMERA & VOICE CAPTURE WITH DISTANCE SELECTOR */}
         {step === 'capture' && (
           <CameraCapture

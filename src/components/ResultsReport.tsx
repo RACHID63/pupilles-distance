@@ -165,9 +165,9 @@ Date de mesure                               : ${new Date().toLocaleDateString('
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-extrabold text-white">Résultats Optométriques Validés</h2>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-lg sm:text-xl font-extrabold text-white">Résultats Optométriques Validés</h2>
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
                 Précision Millimétrique
               </span>
             </div>
@@ -328,8 +328,8 @@ Date de mesure                               : ${new Date().toLocaleDateString('
       </div>
 
       {/* Physiological Normality Gauge */}
-      <div className="no-print bg-slate-900/90 border border-slate-800 p-6 rounded-3xl shadow-xl space-y-4">
-        <div className="flex items-center justify-between">
+      <div className="no-print bg-slate-900/90 border border-slate-800 p-4 sm:p-6 rounded-3xl shadow-xl space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2.5">
           <div>
             <h4 className="text-sm font-bold text-white flex items-center gap-2">
               <Eye className="w-4 h-4 text-emerald-400" />
@@ -381,17 +381,23 @@ Date de mesure                               : ${new Date().toLocaleDateString('
           </div>
 
           {/* Scale labels */}
-          <div className="flex justify-between text-[10px] font-mono text-slate-500 mt-2">
+          <div className="flex justify-between text-[10px] font-mono text-slate-500 mt-2 gap-1">
             <span>48 mm</span>
-            <span className="text-emerald-400">54 mm (Min normale)</span>
-            <span className="font-bold text-slate-300">63.5 mm (Moyenne)</span>
-            <span className="text-emerald-400">74 mm (Max normale)</span>
+            <span className="text-emerald-400">
+              54<span className="hidden sm:inline"> mm (Min normale)</span>
+            </span>
+            <span className="font-bold text-slate-300">
+              63.5<span className="hidden sm:inline"> mm (Moyenne)</span>
+            </span>
+            <span className="text-emerald-400">
+              74<span className="hidden sm:inline"> mm (Max normale)</span>
+            </span>
             <span>80 mm</span>
           </div>
         </div>
 
         {/* Symmetry feedback */}
-        <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800/80 text-xs text-slate-300 flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800/80 text-xs text-slate-300 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-white">Symétrie Faciale :</span>
             <span>
@@ -429,14 +435,14 @@ Date de mesure                               : ${new Date().toLocaleDateString('
         </div>
 
         {/* Patient Name field */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <span className="text-xs font-bold text-slate-700">Nom / Référence :</span>
           <input
             type="text"
             placeholder="Ex: Jean Dupont (optionnel)"
             value={patientName}
             onChange={(e) => setPatientName(e.target.value)}
-            className="flex-1 max-w-sm px-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500"
+            className="flex-1 min-w-[180px] max-w-sm px-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500"
           />
         </div>
 
