@@ -22,6 +22,14 @@ export interface DetectionResult {
   card_detected?: boolean;
   notes?: string;
   estimated_distance_cm?: number;
+  ai_interpretation?: {
+    raw_pd_mm?: number;
+    far_pd_mm?: number;
+    right_monocular_mm?: number;
+    left_monocular_mm?: number;
+    near_pd_mm?: number;
+    summary?: string;
+  };
 }
 
 export interface OptometricCalculations {

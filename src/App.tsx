@@ -115,6 +115,7 @@ export default function App() {
           imageBase64,
           mimeType: 'image/jpeg',
           provider: aiProvider,
+          shootingDistanceCm: distanceCm,
         }),
       });
 
@@ -150,7 +151,13 @@ export default function App() {
         setLeftPupil(lPupil);
         setNoseBridge(data.nose_bridge);
         setAiConfidence(data.confidence ?? 0.95);
-        setAiNotes(data.notes);
+        const summaryNote = data.ai_interpretation?.summary?.trim();
+        const baseNote = data.notes?.trim();
+        setAiNotes(
+          summaryNote && baseNote && summaryNote !== baseNote
+            ? `${summaryNote} (${baseNote})`
+            : summaryNote || baseNote
+        );
 
         playSuccessChime();
         speakFrench('Détection terminée. Vous pouvez vérifier la distance et ajuster les repères.', voiceGuidanceEnabled);
@@ -260,6 +267,7 @@ export default function App() {
             onPhotoCaptured={handlePhotoCaptured}
             voiceGuidanceEnabled={voiceGuidanceEnabled}
             initialDistanceCm={shootingDistanceCm}
+            aiProvider={aiProvider}
           />
         )}
 

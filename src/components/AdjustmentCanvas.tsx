@@ -467,6 +467,7 @@ export const AdjustmentCanvas: React.FC<Props> = ({
         {/* Distance Presets */}
         <div className="flex flex-wrap items-center gap-1.5">
           {[
+            { cm: 20, label: '20 cm' },
             { cm: 40, label: '40 cm' },
             { cm: 50, label: '50 cm' },
             { cm: 60, label: '60 cm (Bras tendu)' },
@@ -488,7 +489,7 @@ export const AdjustmentCanvas: React.FC<Props> = ({
           <div className="flex items-center gap-1.5 ml-1">
             <input
               type="range"
-              min={30}
+              min={20}
               max={200}
               step={5}
               value={shootingDistanceCm}
@@ -709,7 +710,7 @@ export const AdjustmentCanvas: React.FC<Props> = ({
                   <div className="w-2 h-2 rounded-full bg-amber-400" />
                 </div>
                 <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] font-mono font-bold text-amber-300 bg-slate-950/90 px-1 rounded whitespace-nowrap">
-                  Nez
+                  Racine du nez
                 </span>
               </div>
 
@@ -774,7 +775,7 @@ export const AdjustmentCanvas: React.FC<Props> = ({
               {[
                 { id: 'right_pupil', label: 'Pupille Droite (OD)', color: 'text-rose-400 border-rose-500/40 bg-rose-500/10' },
                 { id: 'left_pupil', label: 'Pupille Gauche (OG)', color: 'text-cyan-400 border-cyan-500/40 bg-cyan-500/10' },
-                { id: 'nose_bridge', label: 'Pont Nasal (Nez)', color: 'text-amber-400 border-amber-500/40 bg-amber-500/10' },
+                { id: 'nose_bridge', label: 'Racine du nez (Pont nasal)', color: 'text-amber-400 border-amber-500/40 bg-amber-500/10' },
                 { id: 'card_left', label: 'Bord Carte Gauche', color: 'text-slate-300 border-slate-700 bg-slate-800' },
                 { id: 'card_right', label: 'Bord Carte Droit', color: 'text-slate-300 border-slate-700 bg-slate-800' },
               ].map((item) => (

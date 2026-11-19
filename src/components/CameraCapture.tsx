@@ -8,7 +8,7 @@ import {
   AlertCircle,
   CreditCard,
   Ruler,
-  Info,
+  Radar,
 } from 'lucide-react';
 import {
   createSpeechCommander,
@@ -16,18 +16,21 @@ import {
   playCountdownBeep,
   speakFrench,
 } from '../utils/audio';
-import { DEFAULT_SHOOTING_DISTANCE_CM } from '../types/optometry';
+import { AiProvider, DEFAULT_SHOOTING_DISTANCE_CM } from '../types/optometry';
+import { LiveDistanceTelemeter } from './LiveDistanceTelemeter';
 
 interface Props {
   onPhotoCaptured: (imageBase64: string, shootingDistanceCm: number) => void;
   voiceGuidanceEnabled: boolean;
   initialDistanceCm?: number;
+  aiProvider?: AiProvider;
 }
 
 export const CameraCapture: React.FC<Props> = ({
   onPhotoCaptured,
   voiceGuidanceEnabled,
   initialDistanceCm = DEFAULT_SHOOTING_DISTANCE_CM,
+  aiProvider = 'auto',
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -40,6 +43,7 @@ export const CameraCapture: React.FC<Props> = ({
   // Shooting distance state in cm (default 60 cm - bras tendu)
   const [shootingDistanceCm, setShootingDistanceCm] = useState<number>(initialDistanceCm);
   const [showDistanceCustom, setShowDistanceCustom] = useState<boolean>(false);
+  const [showTelemeter, setShowTelemeter] = useState<boolean>(false);
 
   // Timer: 0s, 3s, 5s, 10s
   const [timerSeconds, setTimerSeconds] = useState<number>(3);
@@ -397,6 +401,7 @@ export const CameraCapture: React.FC<Props> = ({
         {/* Presets & Custom toggle */}
         <div className="flex flex-wrap items-center gap-1.5">
           {[
+            { cm: 20, label: '20 cm' },
             { cm: 40, label: '40 cm' },
             { cm: 50, label: '50 cm' },
             { cm: 60, label: '60 cm (Bras tendu)', recommended: true },
@@ -428,8 +433,31 @@ export const CameraCapture: React.FC<Props> = ({
           >
             Personnalisé...
           </button>
+          <button
+            onClick={() => setShowTelemeter((prev) => !prev)}
+            className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border flex items-center gap-1.5 transition ${
+              showTelemeter
+                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-sm'
+                : 'bg-slate-950/80 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10'
+            }`}
+          >
+            <Radar className="w-3.5 h-3.5" />
+            <span>Télémètre 0→Recul</span>
+          </button>
         </div>
       </div>
+
+      {/* Live Optical & AI Distance Telemeter Drawer */}
+      {showTelemeter && (
+        <LiveDistanceTelemeter
+          videoRef={videoRef}
+          facingMode={facingMode}
+          aiProvider={aiProvider}
+          voiceGuidanceEnabled={voiceGuidanceEnabled}
+          currentDistanceCm={shootingDistanceCm}
+          onDistanceDetected={(cm) => setShootingDistanceCm(cm)}
+        />
+      )}
 
       {/* Custom Slider Drawer if opened */}
       {showDistanceCustom && (
@@ -437,7 +465,7 @@ export const CameraCapture: React.FC<Props> = ({
           <span className="text-slate-400 whitespace-nowrap font-medium">Distance exacte :</span>
           <input
             type="range"
-            min={30}
+            min={20}
             max={200}
             step={5}
             value={shootingDistanceCm}

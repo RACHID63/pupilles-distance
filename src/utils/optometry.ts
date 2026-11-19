@@ -5,6 +5,7 @@ import {
   ISO_CARD_DEFAULT_WIDTH_MM,
   DEFAULT_SHOOTING_DISTANCE_CM,
 } from '../types/optometry';
+import { getSavedFocalConstant } from './distanceEstimator';
 
 /**
  * Calculates Euclidean distance between two 2D points in pixel coordinates.
@@ -17,14 +18,15 @@ export function euclideanDistance(p1: { x: number; y: number }, p2: { x: number;
 
 /**
  * Estimates shooting distance (in cm) based on detected card width fraction
- * assuming standard smartphone camera lens (FOV ~ 66°).
+ * using calibrated camera focal constant (or default ~66° HFOV constant 6.7).
  */
-export function estimateShootingDistanceCm(cardFractionOfWidth: number): number {
+export function estimateShootingDistanceCm(
+  cardFractionOfWidth: number,
+  focalConstantCm: number = getSavedFocalConstant()
+): number {
   if (cardFractionOfWidth <= 0.01) return DEFAULT_SHOOTING_DISTANCE_CM;
-  // Constant derived from 85.6mm card width and standard 66° horizontal field of view
-  // Distance = (Card_Width_mm / (2 * tan(HFOV/2) * fraction)) / 10
-  const estimatedCm = Math.round(6.7 / cardFractionOfWidth);
-  return Math.max(30, Math.min(250, estimatedCm));
+  const estimatedCm = Math.round(focalConstantCm / cardFractionOfWidth);
+  return Math.max(15, Math.min(250, estimatedCm));
 }
 
 /**
@@ -90,8 +92,8 @@ export function computeOptometricPD({
   const rawLeftMonocular = Math.abs(leftPx.x - nosePx.x) * scaleMmPerPixel;
 
   // 2. Optical Convergence Compensation according to shooting distance D
-  // D in mm:
-  const distanceMm = Math.max(250, shootingDistanceCm * 10);
+  // D in mm (supports close-up shots down to 20 cm = 200 mm):
+  const distanceMm = Math.max(150, shootingDistanceCm * 10);
   const CORNEA_TO_ROTATION_CENTER_MM = 25; // standard physiological constant (corneal/card plane to center of eye rotation)
 
   // Factor to extrapolate to infinity (Far Vision VL)
