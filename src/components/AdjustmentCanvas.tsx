@@ -404,6 +404,11 @@ export const AdjustmentCanvas: React.FC<Props> = ({
             <p className="text-xs text-slate-400">
               Déplacez les repères ou utilisez la loupe et les micro-flèches pour un centrage chirurgical.
             </p>
+            {aiNotes && (
+              <p className="text-[11px] text-amber-300 mt-1">
+                {aiNotes}
+              </p>
+            )}
           </div>
         </div>
 

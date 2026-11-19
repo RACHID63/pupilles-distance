@@ -5,7 +5,9 @@ import { AdjustmentCanvas } from './components/AdjustmentCanvas';
 import { ResultsReport } from './components/ResultsReport';
 import { OptometryGuideModal } from './components/OptometryGuideModal';
 import { MeasurementHistory } from './components/MeasurementHistory';
+import { AiSettingsModal } from './components/AiSettingsModal';
 import {
+  AiProvider,
   CardBounds,
   DetectionResult,
   OptometricCalculations,
@@ -51,7 +53,17 @@ export default function App() {
   // Modals & UI States
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState<boolean>(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [voiceGuidanceEnabled, setVoiceGuidanceEnabled] = useState<boolean>(true);
+  const [aiProvider, setAiProvider] = useState<AiProvider>(() => {
+    try {
+      const saved = localStorage.getItem('optipd_ai_provider');
+      if (saved === 'auto' || saved === 'gemini' || saved === 'deepseek') {
+        return saved;
+      }
+    } catch (e) {}
+    return 'auto';
+  });
 
   // Detection progress message
   const [detectProgressText, setDetectProgressText] = useState<string>(
@@ -68,12 +80,18 @@ export default function App() {
     }
   });
 
-  // Sync history to localStorage
+  // Sync history and provider preference to localStorage
   useEffect(() => {
     try {
       localStorage.setItem('optipd_measurements_v1', JSON.stringify(savedHistory));
     } catch (e) {}
   }, [savedHistory]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('optipd_ai_provider', aiProvider);
+    } catch (e) {}
+  }, [aiProvider]);
 
   // Handle Photo Taken from Camera or Upload
   const handlePhotoCaptured = async (imageBase64: string, distanceCm: number) => {
@@ -96,13 +114,15 @@ export default function App() {
         body: JSON.stringify({
           imageBase64,
           mimeType: 'image/jpeg',
+          provider: aiProvider,
         }),
       });
 
       clearTimeout(progressTimer);
 
       if (!response.ok) {
-        throw new Error(`Erreur serveur (${response.status})`);
+        const errPayload = await response.json().catch(() => null);
+        throw new Error(errPayload?.error || `Erreur serveur (${response.status})`);
       }
 
       const result = await response.json();
@@ -137,7 +157,7 @@ export default function App() {
       } else {
         throw new Error('Réponse invalide');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('AI detection fallback used:', error);
       // Fallback: reasonable initial positions centered on the face
       setCardBounds({
@@ -150,7 +170,11 @@ export default function App() {
       setLeftPupil({ x: 0.58, y: 0.52 });
       setNoseBridge({ x: 0.5, y: 0.52 });
       setAiConfidence(0.7);
-      setAiNotes('Calibrage manuel requis : ajustez les repères sur votre cliché.');
+      setAiNotes(
+        error?.message
+          ? `${error.message} — Ajustez les repères manuellement.`
+          : 'Calibrage manuel requis : ajustez les repères sur votre cliché.'
+      );
     } finally {
       setTimeout(() => {
         setStep('adjust');
@@ -222,6 +246,7 @@ export default function App() {
         onToggleVoice={() => setVoiceGuidanceEnabled((prev) => !prev)}
         onOpenGuide={() => setIsGuideOpen(true)}
         onOpenHistory={() => setIsHistoryOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
         historyCount={savedHistory.length}
         currentStep={step === 'detecting' ? 'capture' : step}
         onReset={handleResetToCapture}
@@ -300,6 +325,14 @@ export default function App() {
         onDelete={handleDeleteHistoryItem}
         onClearAll={handleClearHistory}
         onSelect={handleSelectHistoryItem}
+      />
+
+      {/* Paramètres Moteur IA Modal */}
+      <AiSettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        selectedProvider={aiProvider}
+        onSelectProvider={setAiProvider}
       />
 
       {/* Footer */}

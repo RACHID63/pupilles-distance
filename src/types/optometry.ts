@@ -56,6 +56,8 @@ export interface SavedMeasurement {
   };
 }
 
+export type AiProvider = 'auto' | 'gemini' | 'deepseek';
+
 export const ISO_CARD_DEFAULT_WIDTH_MM = 85.60;
 export const ISO_CARD_DEFAULT_HEIGHT_MM = 53.98;
 export const DEFAULT_SHOOTING_DISTANCE_CM = 60; // Standard arm's length (bras tendu)

@@ -1,11 +1,12 @@
 import React from 'react';
-import { Eye, HelpCircle, History, Volume2, VolumeX, ShieldCheck } from 'lucide-react';
+import { Eye, HelpCircle, History, Volume2, VolumeX, Sliders } from 'lucide-react';
 
 interface Props {
   voiceEnabled: boolean;
   onToggleVoice: () => void;
   onOpenGuide: () => void;
   onOpenHistory: () => void;
+  onOpenSettings: () => void;
   historyCount: number;
   currentStep: 'capture' | 'adjust' | 'results';
   onReset: () => void;
@@ -16,6 +17,7 @@ export const Header: React.FC<Props> = ({
   onToggleVoice,
   onOpenGuide,
   onOpenHistory,
+  onOpenSettings,
   historyCount,
   currentStep,
   onReset,
@@ -97,6 +99,16 @@ export const Header: React.FC<Props> = ({
           >
             {voiceEnabled ? <Volume2 className="w-4 h-4 text-rose-400" /> : <VolumeX className="w-4 h-4" />}
             <span className="hidden lg:inline">{voiceEnabled ? 'Voix active' : 'Muet'}</span>
+          </button>
+
+          {/* AI Engine Settings */}
+          <button
+            onClick={onOpenSettings}
+            title="Paramètres Moteur IA (Gemini / DeepSeek)"
+            className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 transition flex items-center gap-1.5 text-xs font-medium"
+          >
+            <Sliders className="w-4 h-4 text-cyan-400" />
+            <span className="hidden lg:inline">Paramètres IA</span>
           </button>
 
           {/* Guide optométrique */}
